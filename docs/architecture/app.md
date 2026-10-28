@@ -136,7 +136,7 @@ These apply to every service: frontend, API and worker.
 | Concern | Target |
 |---|---|
 | Search latency | p95 under 300 ms with ~1M bookings |
-| Page load | Main pages usable in under 2.5 s (Largest Contentful Paint) |
+| Page load | Main pages show their main content in under 2.5 s (Largest Contentful Paint) for 75% of visits; checked on every change in the pipeline and measured on real visits |
 | Sign-in code delivery | 95% of codes delivered within 30 s |
 | Correctness | 0 double-sold seats under concurrent load |
 | Reliability | A payment or SMS failure never loses a booking; retries never create duplicate tickets |

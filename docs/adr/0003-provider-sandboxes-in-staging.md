@@ -28,8 +28,6 @@ What staging needs from the SMS sandbox:
 | **MTN SMS API** (developers.mtn.com) | Same brand as MoMo; Rwanda covered; its API defines delivery-report callbacks | The sandbox "only uses dummy data": no inbox or simulator to see a message; no public report of sandbox callbacks firing; keys only after an app approval step; no official SDK; a different portal, account and sign-in method from MoMo, so "one vendor" saves nothing |
 | **Africa's Talking sandbox** | Free and self-serve; messages show up in a browser phone simulator; delivery and inbound callbacks to your own URL; a free failure case (simulator phone logged out); official Python and Node SDKs, updated in 2026 | A second vendor; callbacks aren't signed, so the callback URL needs its own secret |
 
-Neither provider officially covers the DRC for live SMS. That doesn't matter here: both are only used for practice.
-
 ## Decision
 
 - **Payments:** MTN MoMo developer sandbox.
