@@ -68,7 +68,7 @@ A full-stack ferry ticket booking product for Lake Kivu, serving the Congolese s
 
 | ID | Requirement |
 |---|---|
-| F18 | The site, operations area included, is available in English, French and Swahili; it starts in the browser's language and has a switcher |
+| F18 | The website, operations area included, is available in English, French and Swahili; it starts in the browser's language and has a switcher |
 | F19 | Each traveller's language is saved, on their account or on the booking for guests, and every SMS they get is in it, sign-in codes included |
 
 ### Booking lifecycle
@@ -189,7 +189,7 @@ Object storage (dashed) is added in chapter 09, together with PDF tickets (F8a, 
 | Component | Responsible for | Not responsible for |
 |---|---|---|
 | **Proxy** *(from chapter 04)* | HTTPS; sending `/` to the frontend, `/api` to the API and `/webhooks` to the worker | Routing health checks or the worker's internal port |
-| **Frontend** | The booking site and the operations area; rendering pages; calling the API | Business rules, data access, deciding who may do what |
+| **Frontend** | The booking website and the operations area; rendering pages; calling the API | Business rules, data access, deciding who may do what |
 | **API** | Answering requests quickly; validating them; bookings; sign-in, sessions and roles; publishing jobs | Talking to external providers, including receiving their webhooks |
 | **Worker** | Everything slow or unreliable: payments, tickets (SMS and PDF), sign-in codes, expiring unpaid bookings; receiving the providers' webhooks | Serving users directly |
 | **Object storage** | Ticket PDFs (MinIO on a single server, S3 behind a CDN on AWS) | Anything the database must answer queries about |
@@ -270,8 +270,8 @@ erDiagram
 
 ```text
 app/
-  web/       Next.js site (npm)
-  api/       NestJS API (npm)
+  web/       Next.js web app (pnpm)
+  api/       NestJS API (pnpm)
   worker/    FastAPI worker (uv)
   db/        migrations and schema.sql (dbmate)
   e2e/       end-to-end tests (Playwright)
@@ -293,7 +293,7 @@ One script runs the migrations and regenerates every generated file. A CI check 
 
 ### Translations
 
-- `next-intl` for the site. The worker keeps its SMS texts in one file per language. The API returns error codes, never sentences, and the site translates them.
+- `next-intl` for the web app. The worker keeps its SMS texts in one file per language. The API returns error codes, never sentences, and the web app translates them.
 - SMS texts stay short and plain: characters like ê, ô or â switch an SMS to an encoding limited to 70 characters instead of 160.
 - Translations are checked by a native speaker, especially Swahili: Congolese Swahili differs from the East African Swahili most tools produce.
 
@@ -301,7 +301,7 @@ One script runs the migrations and regenerates every generated file. A CI check 
 
 Written with the app; running them in a pipeline comes with chapter 07.
 
-- Vitest for the site and the API, pytest for the worker.
+- Vitest for the web app and the API, pytest for the worker.
 - F4 and F7 are tested under concurrent requests against a real test database and Valkey, since those guarantees live in the database.
 - Playwright tests the booking flow end to end, against the simulators. The SMS simulator keeps sent messages readable on the worker's internal port, so the test can read the ticket.
 

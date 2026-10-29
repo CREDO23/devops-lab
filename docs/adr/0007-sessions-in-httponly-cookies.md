@@ -8,7 +8,7 @@
 
 ## Context
 
-Travellers sign in with a phone number and a code (F9), staff with email, password and a second factor (F14). Access tokens last 15 minutes, refresh tokens are stored hashed and can be revoked (SEC3), and staff passwords use a slow hash (SEC5). Services are stateless (O7). The site and the API share one domain behind the proxy: `/` and `/api`.
+Travellers sign in with a phone number and a code (F9), staff with email, password and a second factor (F14). Access tokens last 15 minutes, refresh tokens are stored hashed and can be revoked (SEC3), and staff passwords use a slow hash (SEC5). Services are stateless (O7). The web app and the API share one domain behind the proxy: `/` and `/api`.
 
 ## Options considered
 

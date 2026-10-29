@@ -27,7 +27,7 @@ The API and the worker query the same database, whose schema belongs to the SQL 
 - **Generated types are never edited by hand.** One script runs the migrations and regenerates every generated file:
   - the database types for both services;
   - the job payload types ([ADR-0004](0004-bullmq-jobs-with-a-database-sweep.md));
-  - the site's API client, from the API's OpenAPI description.
+  - the web app's API client, from the API's OpenAPI description.
 - **Statuses are Postgres `ENUM`s**, so the generated types stay narrow.
 
 ## Consequences
