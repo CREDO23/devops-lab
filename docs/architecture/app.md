@@ -39,7 +39,7 @@ A full-stack ferry ticket booking product for Lake Kivu, serving the Congolese s
 | F6 | A seat held by an unpaid booking is released after a time limit |
 | F7 | A confirmed booking produces exactly **one** ticket, sent by SMS, even if a step is retried |
 | F8 | A traveller can follow the status of their booking and view their ticket |
-| F8a | Each confirmed booking also gets a PDF ticket the traveller can download; only the booking's owner can download it, through a link that expires |
+| F8a | Each confirmed booking also gets a PDF ticket the traveller can download; only the booking's owner can download it, through a link that expires *(from chapter 09)* |
 
 ### Traveller accounts
 
@@ -157,9 +157,11 @@ flowchart LR
     worker -->|updates bookings, tickets| db
     worker --> pay[Payment provider<br/>simulator · MTN MoMo sandbox]
     worker --> sms[SMS provider<br/>simulator · Africa's Talking sandbox]
-    worker -->|ticket PDFs| files[("Object storage<br/>MinIO / S3")]
-    api -->|signed download links| files
+    worker -.->|ticket PDFs| files[("Object storage<br/>MinIO / S3")]
+    api -.->|signed download links| files
 ```
+
+Object storage (dashed) is added in chapter 09, together with PDF tickets (F8a, S9). Until then, tickets are sent by SMS only.
 
 | Component | Responsible for | Not responsible for |
 |---|---|---|

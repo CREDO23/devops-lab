@@ -43,6 +43,8 @@ git checkout chapter-08-done    # the state chapter 09 starts from
 
 Chapter 01 is the exception: it covers Linux on a throwaway VM, not on the app.
 
+The app is written before chapter 02: the chapters are about running it, not writing it. Parts of it that are really an infrastructure concern wait for the chapter that covers them. Ticket PDFs in object storage, for example, arrive in chapter 09.
+
 | Chapter | What it adds | Status |
 |---|---|---|
 | **Foundations, on my laptop** | | |
