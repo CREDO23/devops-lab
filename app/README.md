@@ -9,6 +9,7 @@ The Kivu Ferry booking app. What it does and why it's built this way: [app desig
 | PostgreSQL | 18, the newest on AWS RDS | `DATABASE_URL` |
 | Valkey | 9.1, the newest on AWS ElastiCache | `VALKEY_URL` |
 | uv | 0.11 or later | installs Python 3.14 for the worker by itself |
+| make | any | runs every service's commands from the repository root (`make` lists them) |
 
 Where PostgreSQL and Valkey run is up to you; the services only need their URLs.
 
@@ -42,7 +43,14 @@ uv run --env-file .env kivu-ferry-worker
 
 On SIGTERM or Ctrl+C, it finishes in-flight requests, logs `worker stopped`, then exits with status 143.
 
-**Check it:**
+**Check it**, from the repository root:
+
+```bash
+make test-worker            # tests, with app/worker/.env when it exists
+make check-worker           # ruff, mypy, and import boundaries
+```
+
+Or inside `app/worker`, with uv directly:
 
 ```bash
 uv run --env-file .env pytest
