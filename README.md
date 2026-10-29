@@ -4,24 +4,26 @@ A learning lab where I take a real-world **full-stack** app, a ferry ticket book
 
 ## The app
 
-Travellers search a trip (*Goma → Bukavu, Saturday 07:00*), pick a seat on the boat and pay with mobile money; once the payment is confirmed, they receive their ticket by SMS. They can book as a guest or sign in with their phone number and a one-time code to keep all their trips in one place. Staff (agents and managers) sign in with two-factor authentication to follow and export bookings and manage staff accounts.
+Travellers search a trip (*Goma → Bukavu, Saturday 07:00*), pick a seat on the boat and pay with mobile money; once the payment is confirmed, they receive their ticket by SMS. They can book as a guest or sign in with their phone number and a one-time code to keep all their trips in one place. Staff (agents and managers) sign in with two-factor authentication to follow and export bookings and manage staff accounts. The site is in English, French and Swahili.
 
 ```mermaid
 flowchart LR
     traveller([Traveller]) --> proxy[Proxy<br/>HTTPS]
     ops([Staff]) --> proxy
+    providers([Payment and SMS<br/>providers]) -->|webhooks| proxy
     proxy -->|/| web["Frontend — Next.js<br/>booking site, operations area"]
     proxy -->|/api| api["API — NestJS<br/>search, bookings, accounts"]
+    proxy -->|/webhooks| worker["Worker — FastAPI<br/>payments, tickets, expiry"]
     web --> api
     api --> db[("PostgreSQL")]
     api -->|jobs| queue[("Redis<br/>queue")]
-    queue --> worker["Worker — FastAPI<br/>payments, tickets, expiry"]
+    queue --> worker
     worker --> db
     worker --> pay[Mobile money<br/>simulator · MTN MoMo sandbox]
     worker --> sms[SMS<br/>tickets, sign-in codes<br/>simulator · Africa's Talking sandbox]
 ```
 
-The API answers travellers and never waits on an external provider. Everything slow or unreliable (payments, SMS, expiring unpaid bookings) goes through a queue to the worker. The database guarantees that a seat is never sold twice and that each confirmed booking gets exactly one ticket, even when jobs are retried.
+The API answers travellers and never waits on an external provider. Everything slow or unreliable (payments, SMS, expiring unpaid bookings) goes through a queue to the worker, and providers report back through webhooks that go straight to the worker. The database guarantees that a seat is never sold twice and that each confirmed booking gets exactly one ticket, even when jobs are retried.
 
 The frontend is self-hosted with the rest of the system, not deployed to Vercel. That's a deliberate choice for learning: running Next.js yourself (containers, scaling, caching across replicas, a CDN for static files) is the DevOps work a managed platform hides. See [ADR-0002](docs/adr/0002-self-host-the-frontend.md).
 
@@ -81,9 +83,12 @@ The app is written before chapter 02: the chapters are about running it, not wri
 
 **Prerequisites**
 
-- Git, Docker, and a Linux, macOS or WSL2 machine
-- A DigitalOcean account from chapter 04
-- An AWS account from chapter 08. Set a budget alert first, and destroy resources after each session.
+- Git, and a Linux, macOS or WSL2 machine
+- From chapter 01: an Ubuntu 24.04 LTS VM you can throw away, created however you like
+- From chapter 02: Node.js, uv, PostgreSQL and Redis (versions in `app/README.md`)
+- From chapter 04: a DigitalOcean account
+- From chapter 06: Docker
+- From chapter 08: an AWS account. Set a budget alert first, and destroy resources after each session.
 
 **Steps**
 
