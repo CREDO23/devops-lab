@@ -118,7 +118,7 @@ These apply to every service: frontend, API and worker. O1–O7 are in the first
 | O4 | Stops cleanly on shutdown, finishing in-flight work |
 | O5 | Structured logs to standard output |
 | O6 | Schema changes are versioned and applied separately from app startup |
-| O7 | Services are stateless, so any instance can be stopped or added; sessions live in the database and Redis, never in a process |
+| O7 | Services are stateless, so any instance can be stopped or added; sessions live in the database and Valkey, never in a process |
 | O8 | Exposes metrics: technical (latency, errors) and business (bookings, tickets sent, codes sent, sign-ins, queue length) *(from chapter 16)* |
 
 **Frontend settings (O1).** Next.js has two kinds of environment variables:
@@ -175,7 +175,7 @@ flowchart LR
     proxy -->|/webhooks| worker["Worker<br/>FastAPI"]
     web -->|server-side calls| api
     api -->|reads, writes| db[("Database<br/>PostgreSQL")]
-    api -->|jobs, rate limits| queue[("Redis<br/>queue, rate limits")]
+    api -->|jobs, rate limits| queue[("Valkey<br/>queue, rate limits")]
     queue --> worker
     worker -->|updates bookings, tickets| db
     worker --> pay[Payment provider<br/>simulator · MTN MoMo sandbox]
@@ -194,7 +194,7 @@ Object storage (dashed) is added in chapter 09, together with PDF tickets (F8a, 
 | **Worker** | Everything slow or unreliable: payments, tickets (SMS and PDF), sign-in codes, expiring unpaid bookings; receiving the providers' webhooks | Serving users directly |
 | **Object storage** | Ticket PDFs (MinIO on a single server, S3 behind a CDN on AWS) | Anything the database must answer queries about |
 | **Database** | The truth about trips, bookings, tickets, accounts and sessions; enforcing "one seat, one booking" | — |
-| **Redis** | Handing work to the worker, with retries; counting requests for rate limits | Storing anything that can't be lost |
+| **Valkey** | Handing work to the worker, with retries; counting requests for rate limits | Storing anything that can't be lost |
 
 Until the proxy arrives, Next.js forwards `/api` to the API locally, and the simulators send their webhooks to the worker directly.
 
@@ -203,12 +203,12 @@ Until the proxy arrives, Next.js forwards `/api` to the API locally, and the sim
 The API and the worker never call each other:
 
 ```text
-API ──jobs──▶ Redis ──jobs──▶ Worker              BullMQ (ADR-0004)
+API ──jobs──▶ Valkey ──jobs──▶ Worker              BullMQ (ADR-0004)
 API ◀──reads── PostgreSQL ◀──writes── Worker
 Provider ──webhooks──▶ proxy ──/webhooks──▶ Worker
 ```
 
-- **The API hands work to the worker as jobs in Redis.** The worker never answers the API: it writes results to the database, and the API reads them there.
+- **The API hands work to the worker as jobs in Valkey.** The worker never answers the API: it writes results to the database, and the API reads them there.
 - **Providers report results through webhooks**, which the providers' docs call callbacks. Each URL is named after the provider and what it reports (`/webhooks/momo/payments`, `/webhooks/africastalking/sms`) and carries a secret the worker checks (SEC10).
 - **Every 30 seconds or so, the worker sweeps the database.** It expires overdue unpaid bookings, after asking the provider for the payment status, and re-queues work that's still due, like a ticket not yet sent. A lost job or a missed payment webhook delays work but never loses it; a missed SMS delivery report only means that SMS is never marked delivered.
 - **Payment requests reuse one reference per booking** (MoMo's `X-Reference-Id`), so a retried job can't charge twice.
@@ -259,7 +259,7 @@ erDiagram
 | **Session** | Who it belongs to, a hashed refresh token, device, expiry, revoked or not |
 | **Audit event** | Which staff member did what, to what, and when |
 
-- Sign-in codes and rate-limit counters are short-lived and live in Redis, not in the database.
+- Sign-in codes and rate-limit counters are short-lived and live in Valkey, not in the database.
 - Amounts are stored in cents. Times are stored in UTC and shown in local time (UTC+2).
 - Statuses are Postgres `ENUM`s ([ADR-0006](../adr/0006-query-the-database-with-generated-types.md)).
 - A seed command creates the routes between the five ports, boats, a timetable and the first manager, since none of them can be managed from the interface.
@@ -277,7 +277,7 @@ app/
   e2e/       end-to-end tests (Playwright)
 ```
 
-Each service is its own package with its own lockfile, with no workspace tool: builds are chapter 03's subject. The services need PostgreSQL and Redis, reachable at `DATABASE_URL` and `REDIS_URL`; where they run is up to whoever runs the app. Versions are in `app/README.md`.
+Each service is its own package with its own lockfile, with no workspace tool: builds are chapter 03's subject. The services need PostgreSQL and Valkey, reachable at `DATABASE_URL` and `VALKEY_URL`; where they run is up to whoever runs the app. Versions are in `app/README.md`.
 
 ### Contracts
 
@@ -302,7 +302,7 @@ One script runs the migrations and regenerates every generated file. A CI check 
 Written with the app; running them in a pipeline comes with chapter 07.
 
 - Vitest for the site and the API, pytest for the worker.
-- F4 and F7 are tested under concurrent requests against a real test database and Redis, since those guarantees live in the database.
+- F4 and F7 are tested under concurrent requests against a real test database and Valkey, since those guarantees live in the database.
 - Playwright tests the booking flow end to end, against the simulators. The SMS simulator keeps sent messages readable on the worker's internal port, so the test can read the ticket.
 
 ### Decisions
@@ -314,3 +314,4 @@ Written with the app; running them in a pipeline comes with chapter 07.
 | [0006](../adr/0006-query-the-database-with-generated-types.md) | Kysely and SQLAlchemy, with types generated from the schema |
 | [0007](../adr/0007-sessions-in-httponly-cookies.md) | Sessions in httpOnly cookies |
 | [0008](../adr/0008-signing-keys-as-a-key-set.md) | Signing keys as a key set from an environment variable |
+| [0009](../adr/0009-valkey-instead-of-redis.md) | Valkey instead of Redis |

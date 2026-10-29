@@ -16,7 +16,7 @@ Travellers sign in with a phone number and a code (F9), staff with email, passwo
 |---|---|---|
 | **httpOnly cookies, one domain** | Page scripts can't read the tokens; no CORS; works with server-side rendering | Needs CSRF protection; native apps need another way |
 | Tokens in browser storage, sent in a header | Same mechanism for web and native apps | Any script injected into the page can read them |
-| Server-side sessions only | Instant revocation | A database or Redis lookup on every request |
+| Server-side sessions only | Instant revocation | A database or Valkey lookup on every request |
 
 ## Decision
 

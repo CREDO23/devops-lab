@@ -1,6 +1,6 @@
 # devops-lab
 
-A learning lab where I take a real-world **full-stack** app, a ferry ticket booking system for Lake Kivu with a **Next.js frontend, a NestJS API, a Python worker, PostgreSQL and Redis**, along the whole path from code to production, one DevOps tool at a time: from my laptop to a tested build, through a pipeline that integrates and deploys every change, onto a single server, then AWS and Kubernetes, and finally monitoring it and releasing changes safely.
+A learning lab where I take a real-world **full-stack** app, a ferry ticket booking system for Lake Kivu with a **Next.js frontend, a NestJS API, a Python worker, PostgreSQL and Valkey**, along the whole path from code to production, one DevOps tool at a time: from my laptop to a tested build, through a pipeline that integrates and deploys every change, onto a single server, then AWS and Kubernetes, and finally monitoring it and releasing changes safely.
 
 ## The app
 
@@ -16,7 +16,7 @@ flowchart LR
     proxy -->|/webhooks| worker["Worker — FastAPI<br/>payments, tickets, expiry"]
     web --> api
     api --> db[("PostgreSQL")]
-    api -->|jobs| queue[("Redis<br/>queue")]
+    api -->|jobs| queue[("Valkey<br/>queue")]
     queue --> worker
     worker --> db
     worker --> pay[Mobile money<br/>simulator · MTN MoMo sandbox]
@@ -29,7 +29,7 @@ The frontend is self-hosted with the rest of the system, not deployed to Vercel.
 
 No real money or SMS is involved. On a laptop, payments and SMS go to built-in simulators that can be made slow or failing on demand; staging uses the free [MTN MoMo](https://momodeveloper.mtn.com/) and [Africa's Talking](https://developers.africastalking.com/) sandboxes ([ADR-0003](docs/adr/0003-provider-sandboxes-in-staging.md)). Requirements, booking lifecycle and data model: [app design](docs/architecture/app.md).
 
-**App stack:** Next.js, NestJS, FastAPI, PostgreSQL, Redis
+**App stack:** Next.js, NestJS, FastAPI, PostgreSQL, Valkey
 
 **Infrastructure stack:** DigitalOcean, Nexus, Docker, Jenkins, GitHub Actions, AWS (VPC, EC2, RDS, ElastiCache, S3, CloudFront, ECR, EKS), MinIO, Kubernetes, Helm, Argo CD, Argo Rollouts, OpenFeature, Terraform, Ansible, Prometheus, Grafana, Loki
 
@@ -85,7 +85,7 @@ The app is written before chapter 02: the chapters are about running it, not wri
 
 - Git, and a Linux, macOS or WSL2 machine
 - From chapter 01: an Ubuntu 24.04 LTS VM you can throw away, created however you like
-- From chapter 02: Node.js, uv, PostgreSQL and Redis (versions in `app/README.md`)
+- From chapter 02: Node.js, uv, PostgreSQL and Valkey (versions in `app/README.md`)
 - From chapter 04: a DigitalOcean account
 - From chapter 06: Docker
 - From chapter 08: an AWS account. Set a budget alert first, and destroy resources after each session.

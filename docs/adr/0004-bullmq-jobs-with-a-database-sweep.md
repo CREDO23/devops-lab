@@ -8,19 +8,19 @@
 
 ## Context
 
-The API (NestJS, TypeScript) hands slow or unreliable work to the worker (FastAPI, Python) through Redis: requesting payments and sending sign-in codes. The worker also queues work for itself, like sending a ticket once a payment is confirmed.
+The API (NestJS, TypeScript) hands slow or unreliable work to the worker (FastAPI, Python) through Valkey: requesting payments and sending sign-in codes. The worker also queues work for itself, like sending a ticket once a payment is confirmed.
 
 - Jobs are produced in Node and consumed in Python, so both sides must agree on the job format.
 - Failed jobs must be retried with a delay.
-- Redis holds nothing that can't be lost ([app design](../architecture/app.md)), so losing a job must never lose work.
+- Valkey holds nothing that can't be lost ([app design](../architecture/app.md)), so losing a job must never lose work.
 
 ## Options considered
 
 | Option | Pros | Cons |
 |---|---|---|
-| **BullMQ** (Node and Python) | Official libraries for both languages from the same maintainers; same job format in Redis; retries, backoff and delayed jobs | The Python library has fewer features than the Node one |
+| **BullMQ** (Node and Python) | Official libraries for both languages from the same maintainers; same job format in Valkey; retries, backoff and delayed jobs | The Python library has fewer features than the Node one |
 | **Celery** | Mature and Python-native | Node producers are poorly supported; its own message format |
-| **Redis Streams, by hand** | No library; full control | Retries, backoff and failed jobs written and tested by hand |
+| **Valkey Streams, by hand** | No library; full control | Retries, backoff and failed jobs written and tested by hand |
 
 ## Decision
 
@@ -35,7 +35,7 @@ The API (NestJS, TypeScript) hands slow or unreliable work to the worker (FastAP
 ## Consequences
 
 **Positive:**
-- Losing Redis delays work but never loses it; the database stays the source of truth.
+- Losing Valkey delays work but never loses it; the database stays the source of truth.
 - A payload mismatch between the API and the worker is a build error, not a booking stuck until it expires.
 
 **Negative / accepted trade-offs:**
