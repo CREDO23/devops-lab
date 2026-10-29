@@ -34,4 +34,5 @@ kubeconfig*
 # OS / editors
 .DS_Store
 .idea/
-.vscode/
+.vscode/*
+!.vscode/settings.json
