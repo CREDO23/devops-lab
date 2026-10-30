@@ -1,0 +1,168 @@
+/* Design tokens: the only file where raw values (hex, px, font names) are allowed.
+   Tailwind builds its classes from @theme, so only these values can be used. */
+
+@theme {
+  /* Tailwind's own values go; its breakpoints stay. */
+  --color-*: initial;
+  --font-*: initial;
+  --text-*: initial;
+  --font-weight-*: initial;
+  --tracking-*: initial;
+  --leading-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --container-*: initial;
+  --spacing: initial;
+  --spacing-*: initial;
+
+  /* Colour: surfaces */
+  --color-bg: #f4f6f5; /* page ground */
+  --color-surface: #fff; /* cards, header, inputs */
+  --color-primary-soft: #e3f1f3; /* tinted tiles, active nav item */
+
+  /* Colour: text */
+  --color-fg: #10212b;
+  --color-muted: #4a5a63; /* secondary text, labels */
+  --color-subtle: #8a9ba3; /* placeholders, filled-digit borders */
+
+  /* Colour: lines */
+  --color-line: #e2e8ea; /* card borders, header divider */
+  --color-line-strong: #cbd5d9; /* input borders, taken seats */
+  --color-line-soft: #eef2f3; /* table row dividers */
+
+  /* Colour: brand */
+  --color-primary: #0b5f6d; /* buttons, hero, selected */
+  --color-primary-hover: #08434d;
+  --color-on-primary: #fff;
+  --color-on-primary-muted: #d6ecef; /* secondary text on the teal hero and ticket */
+  --color-link: #0b5f6d;
+  --color-link-hover: #08434d;
+  --color-accent: #f2a65a; /* the traveller's own seat, current step */
+  --color-on-accent: #10212b;
+
+  /* Colour: status (background, text) */
+  --color-success-bg: #e3f2e6;
+  --color-success: #1f5129;
+  --color-success-strong: #2e6b3a; /* "12 seats left", completed step */
+  --color-warning-bg: #fdf1e4;
+  --color-warning: #6b3a10;
+  --color-warning-strong: #a3470f; /* "3 seats left" */
+  --color-danger-bg: #f8e3e1;
+  --color-danger: #8e2a20;
+  --color-neutral-bg: #eef2f3; /* expired, disabled */
+  --color-neutral: #4a5a63;
+
+  /* Type */
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace; /* codes, references, OTP */
+
+  /* Scale: 2px steps up to 18, then 4px steps */
+  --text-xs: 12px; /* meta, table headers, legends */
+  --text-sm: 14px; /* secondary text, labels, body on desktop */
+  --text-base: 16px; /* body on mobile, buttons, inputs (16px stops iOS zooming into fields) */
+  --text-lg: 18px; /* brand, prices, card titles */
+  --text-xl: 22px; /* ports on the ticket, code digits */
+  --text-2xl: 26px; /* page titles */
+  --text-3xl: 30px; /* hero title */
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --leading-tight: 1.15; /* hero title */
+  --leading-snug: 1.4;
+  --leading-normal: 1.5;
+  --tracking-title: -0.4px;
+  --tracking-hero: -0.6px;
+  --tracking-caps: 0.4px; /* uppercase labels and table headers */
+  --tracking-code: 2px; /* booking references */
+  --tracking-otp: 6px; /* one-time code input */
+
+  /* Space: the only spacing values allowed */
+  --spacing-0-5: 2px;
+  --spacing-1: 4px;
+  --spacing-1-5: 6px;
+  --spacing-2: 8px;
+  --spacing-2-5: 10px;
+  --spacing-3: 12px;
+  --spacing-3-5: 14px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-7: 28px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-16: 64px; /* search form overlapping the hero */
+  --spacing-24: 96px;
+
+  /* Shape */
+  --radius-xs: 4px; /* legend swatches */
+  --radius-sm: 8px; /* seats, small buttons, tabs */
+  --radius-md: 12px; /* inputs, buttons */
+  --radius-lg: 16px; /* cards, forms */
+  --radius-xl: 20px; /* the ticket */
+  --radius-hull: 48px; /* bow of the boat on the seat map */
+  --radius-pill: 999px;
+  --radius-round: 50%;
+  --shadow-raised: 0 8px 24px rgb(16 33 43 / 10%);
+
+  /* Sizes */
+  --spacing-control-sm: 36px; /* small table actions */
+  --spacing-control-md: 44px; /* minimum touch target, icon buttons */
+  --spacing-control-lg: 48px; /* inputs and buttons on desktop */
+  --spacing-control-xl: 52px; /* inputs and buttons on mobile */
+  --spacing-control-2xl: 56px; /* code inputs */
+  --spacing-icon-sm: 16px;
+  --spacing-icon-md: 20px;
+  --spacing-icon-lg: 24px;
+  --spacing-icon-xl: 28px; /* logo */
+  --spacing-icon-tile: 52px; /* icon on a tinted square */
+  --spacing-status-circle: 88px; /* big icon on Pending and Failed */
+  --spacing-qr-size: 160px;
+  /* Layout */
+  --container-page-width: 1280px; /* operations area */
+  --container-auth-width: 420px; /* staff sign-in card */
+  --container-stat-min: 180px; /* stat cards before they wrap */
+}
+
+/* No Tailwind namespace fits these. */
+:root {
+  color-scheme: light;
+  --border-width: 1px;
+  --border-width-strong: 1.5px; /* focused or selected inputs and seats */
+  --border: var(--border-width) solid var(--color-line);
+  --border-strong: var(--border-width) solid var(--color-line-strong);
+  --border-tear: 2px dashed var(--color-line-strong); /* ticket stub */
+
+  /* Focus */
+  --focus-ring: 2px solid var(--color-link);
+  --focus-offset: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --color-bg: #0e1a20;
+    --color-surface: #15252d;
+    --color-primary-soft: #12363d;
+    --color-fg: #e6eef0;
+    --color-muted: #a9b8bf;
+    --color-subtle: #7f9199;
+    --color-line: #24363f;
+    --color-line-strong: #33464f;
+    --color-line-soft: #1c2d35;
+    --color-primary-hover: #0e6e7e;
+    --color-link: #6fc3cf;
+    --color-link-hover: #a6e1e8;
+    --color-success-bg: #173a22;
+    --color-success: #8fd3a0;
+    --color-success-strong: #7cc48e;
+    --color-warning-bg: #3a2a15;
+    --color-warning: #f2c08a;
+    --color-warning-strong: #f0a35e;
+    --color-danger-bg: #3d1f1c;
+    --color-danger: #f0948a;
+    --color-neutral-bg: #1c2d35;
+    --color-neutral: #a9b8bf;
+    --shadow-raised: 0 8px 24px rgb(0 0 0 / 40%);
+  }
+}

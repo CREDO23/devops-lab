@@ -1,6 +1,6 @@
 # Kivu Ferry: design tokens
 
-Source: every value used in the 14 screens of the "Kivu Ferry pages" design. The file is `app/web/src/styles/tokens.css`, the only file allowed to contain raw values (hex, px, font names). Light is the default. Dark follows the system setting.
+Source: every value used in the 14 screens of the "Kivu Ferry pages" design. The file is `app/web/src/styles/tokens.css`, the only file allowed to contain raw values (hex, px, font names). Light is the default. Dark follows the system setting. The tokens sit in Tailwind's `@theme`, which creates their classes (`bg-primary`, `text-sm`, `p-4`, `h-control-lg`). Borders and the focus ring are whole values no Tailwind namespace takes, so they stay plain CSS variables.
 
 ## Colour (light / dark)
 
@@ -37,11 +37,11 @@ Source: every value used in the 14 screens of the "Kivu Ferry pages" design. The
 |---|---|
 | Font | `sans` Plus Jakarta Sans · `mono` JetBrains Mono (codes, references, OTP) |
 | Size | `xs` 12 · `sm` 14 (secondary text, desktop body) · `base` 16 (mobile body, buttons, inputs) · `lg` 18 · `xl` 22 · `2xl` 26 · `3xl` 30 (hero): 2px steps up to 18, then 4px |
-| Weight | `regular` 400 · `semibold` 600 · `bold` 700 · `extrabold` 800 |
+| Weight (`--font-weight-*`) | `regular` 400 · `semibold` 600 · `bold` 700 · `extrabold` 800 |
 | Line height | `tight` 1.15 (hero) · `snug` 1.4 · `normal` 1.5 |
 | Letter spacing | `title` −0.4px · `hero` −0.6px · `caps` 0.4px · `code` 2px · `otp` 6px |
 
-## Space
+## Space (`--spacing-*`)
 
 `0-5` 2 · `1` 4 · `1-5` 6 · `2` 8 · `2-5` 10 · `3` 12 · `3-5` 14 · `4` 16 · `5` 20 · `6` 24 · `7` 28 · `8` 32 · `10` 40 · `16` 64 · `24` 96 (px)
 
