@@ -1,0 +1,4 @@
+#!/bin/sh
+# dbmate ignores a failing pg_dump, so its error is kept for run-dbmate.sh to report.
+$PG_DUMP_COMMAND "$@" 2>"$PG_DUMP_ERRORS" || { status=$?; [ -s "$PG_DUMP_ERRORS" ] || echo "exit status $status" >"$PG_DUMP_ERRORS"; exit "$status"; }
+: >"$PG_DUMP_ERRORS"

@@ -1,6 +1,6 @@
 # One front door for every service; each service keeps its own native commands.
 .DEFAULT_GOAL := help
-.PHONY: help install test check install-worker test-worker check-worker install-api test-api check-api install-web test-web check-web
+.PHONY: help install test check db-new-migration db-migrate db-rollback install-db test-db check-db install-worker test-worker check-worker install-api test-api check-api install-web test-web check-web
 
 # Use the worker's .env when it exists; elsewhere the variables come from the environment.
 WORKER_ENV_FILE := $(if $(wildcard app/worker/.env),--env-file .env)
@@ -14,13 +14,39 @@ heading = @if [ -t 1 ]; then printf '\n\033[1m▶ %s\033[0m\n' '$(1)'; else prin
 quietly = out=$$($(2) 2>&1) && echo "  ✔ $(1)" || { echo "  ✘ $(1)"; echo "$$out"; exit 1; }
 
 help: ## List the commands
-	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  make %-15s %s\n", $$1, $$2}'
+	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  make %-17s %s\n", $$1, $$2}'
 
-install: install-worker install-api install-web ## Install every service's dependencies
+install: install-db install-worker install-api install-web ## Install every service's dependencies
 
-test: test-worker test-api test-web ## Run every service's tests
+test: test-db test-worker test-api test-web ## Run every service's tests
 
-check: check-worker check-api check-web ## Run every service's linting, formatting, type and boundary checks
+check: check-db check-worker check-api check-web ## Run every service's linting, formatting, type and boundary checks
+
+db-new-migration: ## Create an empty migration file: make db-new-migration name=add_passenger_name
+	$(call heading,db · new migration)
+	@[ -n "$(name)" ] || { echo "  ✘ missing name: make db-new-migration name=add_passenger_name"; exit 1; }
+	@cd app/db && $(USE_NODE) && pnpm -s new-migration "$(name)"
+
+db-migrate: ## Apply the database migrations and update schema.sql
+	$(call heading,db · migrate)
+	@cd app/db && $(USE_NODE) && pnpm -s migrate
+
+db-rollback: ## Undo the newest database migration and update schema.sql
+	$(call heading,db · rollback)
+	@cd app/db && $(USE_NODE) && pnpm -s rollback
+
+install-db: ## Database tooling
+	$(call heading,db · install)
+	@cd app/db && $(USE_NODE) && pnpm install --frozen-lockfile
+
+test-db: ## Database tests (needs Postgres)
+	$(call heading,db · tests)
+	@cd app/db && $(USE_NODE) && pnpm -s test
+
+check-db: ## Database test code: types and formatting
+	$(call heading,db · checks)
+	@cd app/db && $(USE_NODE) && $(call quietly,types,pnpm -s typecheck)
+	@cd app/db && $(USE_NODE) && $(call quietly,prettier,pnpm -s format:check)
 
 install-worker: ## Worker dependencies
 	$(call heading,worker · install)

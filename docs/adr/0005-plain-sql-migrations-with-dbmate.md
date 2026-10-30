@@ -24,6 +24,7 @@ Two services in two languages write to one PostgreSQL database. Schema changes m
 - **dbmate**, with migrations in `app/db/migrations/` and `app/db/schema.sql` committed after every migration.
 - **Migrations run as their own command, never at app start.** Several replicas starting at once would race to migrate.
 - **dbmate's version is pinned, and `pg_dump` matches the server's version**, so `schema.sql` only changes when the schema does.
+- **`PG_DUMP_COMMAND` says how to run `pg_dump`,** so the repo doesn't care where PostgreSQL runs. Without `pg_dump`, migrations still run and `schema.sql` isn't updated; when it fails, the error is reported, since dbmate alone ignores it.
 
 ## Consequences
 
@@ -34,6 +35,7 @@ Two services in two languages write to one PostgreSQL database. Schema changes m
 **Negative / accepted trade-offs:**
 - Every rollback (`-- migrate:down`) is written by hand.
 - A `pg_dump` that doesn't match the server's version rewrites `schema.sql` for no reason.
+- `schema.sql` can go stale on a machine with no `pg_dump`. Migrating there warns loudly without failing, and the check in chapter 07's pipeline will catch it.
 
 **Revisit if:**
 - A tool built for zero-downtime changes, like pgroll, would make chapter 02's expand/contract steps safer.
