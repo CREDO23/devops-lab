@@ -41,7 +41,7 @@ A full-stack ferry ticket booking product for Lake Kivu, serving the Congolese s
 | F6 | A seat held by an unpaid booking is released after a time limit (10 minutes) |
 | F6a | If a payment succeeds after its booking expired, the booking is flagged for staff; refunds are out of scope |
 | F7 | A confirmed booking produces exactly **one** ticket, sent by SMS, even if a step is retried. The SMS itself is sent at least once: a crash right after sending can send it again |
-| F8 | A signed-in traveller can follow their booking's status and view their ticket. Guests get the outcome by SMS: the ticket if the payment went through, a notice if it failed or expired |
+| F8 | A traveller can follow their booking's status and view their ticket: a guest right after booking, on that device; a signed-in traveller at any time. The outcome also goes out by SMS: the ticket if the payment went through, a notice if it failed or expired |
 | F8a | Each confirmed booking also gets a PDF ticket the traveller can download; only the booking's owner can download it, through a link that expires *(from chapter 09)* |
 
 ### Traveller accounts
@@ -62,7 +62,7 @@ A full-stack ferry ticket booking product for Lake Kivu, serving the Congolese s
 | F15 | Agents can list, filter and search bookings by reference or phone number; the list starts with departures from their home port |
 | F16 | Managers can also export bookings for a date range, and create, disable and assign roles to staff accounts |
 | F16a | A new staff member sets their password and second factor through a single-use setup link from their manager; the same kind of link resets a forgotten password or a lost second factor. The first manager is created with a command |
-| F17 | Every export and every change to a staff account is recorded with who did it and when |
+| F17 | Every staff sign-in, every export and every change to a staff account is recorded with who did it and when |
 
 ### Languages
 
@@ -142,6 +142,7 @@ An `APP_ENV` variable, if set, only labels logs and the version endpoint; it nev
 | SEC8 | Backups are encrypted; deleted accounts are removed from the live database and age out of backups |
 | SEC9 | Ticket files are never public: stored encrypted, reachable only through short-lived signed links, with names that can't be guessed *(from chapter 09)* |
 | SEC10 | Every webhook URL carries a secret, checked on every call, since the providers don't sign their webhooks |
+| SEC11 | A guest can only see the booking they just made, through a short-lived signed cookie issued with it |
 
 ### Testing support
 
@@ -250,9 +251,9 @@ erDiagram
 | Entity | What it holds |
 |---|---|
 | **Route** | Origin, destination and fare (US dollars) |
-| **Boat** | Name and seat count; the seat map is a simple grid |
-| **Trip** | A route, a boat and a departure |
-| **Booking** | A trip, a seat, a phone number, a language, the amount, a payment reference, a status, and the traveller if signed in |
+| **Boat** | Name, and rows and columns of seats, with the aisle down the middle; the seat count comes from them |
+| **Trip** | A route, a boat, a departure and an arrival |
+| **Booking** | A public reference (short, for reading aloud and SMS), a trip, a seat like `4C`, a phone number, a language, the amount, a payment reference, a status, and the traveller if signed in |
 | **Ticket** | One per confirmed booking, with the location of its PDF file |
 | **Traveller** | Phone number (unique), optional name, language, created and last-seen dates |
 | **Staff** | Name, email, password hash, second-factor secret, role (agent or manager), home port, invited, active or disabled, and a single-use setup link (stored hashed, with an expiry) |
@@ -261,8 +262,11 @@ erDiagram
 
 - Sign-in codes and rate-limit counters are short-lived and live in Valkey, not in the database.
 - Amounts are stored in cents. Times are stored in UTC and shown in local time (UTC+2).
+- Boarding rules are the same for every trip, so they're constants: be at the port 30 minutes before departure, boarding closes 15 minutes before.
+- Popular routes, trips a day and the staff stat cards are computed, never stored.
 - Statuses are Postgres `ENUM`s ([ADR-0006](../adr/0006-query-the-database-with-generated-types.md)).
-- A seed command creates the routes between the five ports, boats, a timetable and the first manager, since none of them can be managed from the interface.
+- A seed command fills development and staging with fake ports, routes, boats and a timetable, and refuses to run unless `ALLOW_FAKE_DATA=true`, which production never sets.
+- Production's data is real, not seed data. The first manager comes from its own command; loading the real routes, boats and timetable, which can't be managed from the interface, isn't designed yet.
 
 ## 8 · Building the app
 
@@ -290,6 +294,12 @@ Each contract has one owner; every other side gets generated types, never writte
 | HTTP API | API (OpenAPI) | Frontend (typed client) |
 
 One script runs the migrations and regenerates every generated file. A CI check that they're up to date comes with chapter 07.
+
+### Design
+
+- Screens and tokens: [`docs/design/`](../design/). The tokens are the source of truth over the exact values in the screens.
+- The tokens live in Tailwind's `@theme`, with Tailwind's default values removed, so only they can be used.
+- The theme follows the system setting. Fonts are self-hosted, so the build needs no network.
 
 ### Translations
 

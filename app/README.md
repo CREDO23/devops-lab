@@ -7,6 +7,7 @@ The Kivu Ferry booking app. What it does and why it's built this way: [app desig
 | Dependency | Version | How the app finds it |
 |---|---|---|
 | PostgreSQL | 18, the newest on AWS RDS | `DATABASE_URL` |
+| pg_dump | 18, optional | Writes `schema.sql`: see [Database](#database) |
 | Valkey | 9.1, the newest on AWS ElastiCache | `VALKEY_URL` |
 | uv | 0.11 or later | installs Python 3.14 for the worker by itself |
 | Node.js | 26 (LTS), pinned in each service's `.nvmrc` | `make` switches to it through nvm when nvm is installed |
@@ -16,6 +17,37 @@ The Kivu Ferry booking app. What it does and why it's built this way: [app desig
 Where PostgreSQL and Valkey run is up to you; the services only need their URLs. `make install` installs every service's dependencies.
 
 A clean stop (SIGTERM) exits with status 143 in all three services: that's expected, not a failure.
+
+## Database
+
+Migrations in plain SQL, in `app/db/migrations/`. `app/db/schema.sql` is the resulting structure: commit it with each migration. Never edit either after it's merged.
+
+```bash
+cd app/db
+cp .env.example .env        # then adjust
+cd ../..
+make db-migrate             # or make db-rollback
+make db-new-migration name=add_passenger_name
+make db-seed                # fake data, development and staging only
+make db-generate-types      # after any new migration; never edit the generated files
+make test-db
+make check-db
+```
+
+| Variable | Example | Purpose |
+|---|---|---|
+| `DATABASE_URL` | `postgres://kivu:kivu@localhost:5432/kivu?sslmode=disable` | The database to migrate |
+| `TEST_DATABASE_URL` | `postgres://kivu:kivu@localhost:5432/kivu_test?sslmode=disable` | Tests create and drop their own databases from here, so its user must be allowed to |
+| `PG_DUMP_COMMAND` | `pg_dump -h db.example` | Optional. The command that runs `pg_dump`, wherever PostgreSQL is |
+| `ALLOW_FAKE_DATA` | `true` | `make db-seed` refuses to run without it. Production never sets it |
+
+| `pg_dump` | `make db-migrate` | `schema.sql` |
+|---|---|---|
+| Set in `PG_DUMP_COMMAND`, or on the `PATH` | Migrates | Updated |
+| Not available | Migrates, with a note, and a loud warning if `schema.sql` misses a migration | Not updated, and its test is skipped |
+| Fails | Migrates, then exits with status 1 and the cause | Not updated |
+
+`pg_dump` must be at least as new as the server.
 
 ## Worker
 

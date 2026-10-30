@@ -1,0 +1,29 @@
+{
+  "name": "kivu-ferry-db",
+  "version": "0.1.0",
+  "description": "Kivu Ferry database: migrations and schema",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.16.1",
+  "scripts": {
+    "new-migration": "./scripts/run-dbmate.sh new",
+    "migrate": "./scripts/run-dbmate.sh up",
+    "rollback": "./scripts/run-dbmate.sh rollback",
+    "generate-types": "./scripts/generate-types.sh",
+    "seed": "node --env-file-if-exists=.env seed/load-fake-data.ts",
+    "test": "node --env-file-if-exists=.env node_modules/vitest/vitest.mjs run",
+    "format": "prettier --write \"{seed,test}/**/*.ts\"",
+    "format:check": "prettier --check \"{seed,test}/**/*.ts\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/pg": "^8.23.1",
+    "dbmate": "2.37.0",
+    "pg": "^8.23.1",
+    "prettier": "^3.9.10",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.5",
+    "vitest": "^4.1.12"
+  }
+}
