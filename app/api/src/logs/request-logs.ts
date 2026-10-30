@@ -1,4 +1,3 @@
-/** Which requests get logged, and which parts of them. */
 import type { IncomingMessage, ServerResponse } from 'node:http';
 
 import type { Options } from 'pino-http';

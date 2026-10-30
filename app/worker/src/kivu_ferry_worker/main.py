@@ -1,5 +1,3 @@
-"""Starts the worker and stops it cleanly on SIGTERM."""
-
 import os
 import sys
 

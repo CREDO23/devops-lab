@@ -1,4 +1,3 @@
-/** Settings from environment variables, checked once at startup. */
 import { z } from 'zod';
 
 import { LOG_LEVELS } from './logs/index.js';
@@ -13,7 +12,6 @@ const settingsSchema = z.object({
 
 export type Settings = z.infer<typeof settingsSchema>;
 
-/** The environment can't produce valid settings; the API must not start. */
 export class SettingsError extends Error {
   override name = 'SettingsError';
 }

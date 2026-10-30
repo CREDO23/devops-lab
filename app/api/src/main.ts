@@ -1,4 +1,3 @@
-/** Starts the API and stops it cleanly on SIGTERM. */
 import { createApi } from './api.js';
 import { type Settings, SettingsError, loadSettings } from './config.js';
 import { startupLogger } from './logs/index.js';

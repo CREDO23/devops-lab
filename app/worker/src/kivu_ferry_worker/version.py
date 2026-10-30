@@ -1,5 +1,3 @@
-"""The running version, as installed from pyproject.toml."""
-
 from importlib.metadata import version
 
 

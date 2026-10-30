@@ -69,7 +69,7 @@ async def test_version_is_the_one_declared_in_pyproject() -> None:
 
 @pytest.mark.anyio
 async def test_not_ready_names_every_dependency_that_is_down() -> None:
-    """With both Postgres and Valkey unreachable, /readyz says not ready and names both."""
+    """Every failing dependency is named at once, so you don't fix one only to find the next."""
     response = await get("/readyz", UNREACHABLE)
 
     assert (response.status_code, response.json()) == (
@@ -80,7 +80,7 @@ async def test_not_ready_names_every_dependency_that_is_down() -> None:
 
 @pytest.mark.anyio
 async def test_ready_when_postgres_and_valkey_answer(running_services: Settings) -> None:
-    """With a real Postgres and Valkey answering, /readyz says ready."""
+    """Proves the checks really reach both services, not only that failures are detected."""
     response = await get("/readyz", running_services)
 
     assert (response.status_code, response.json()) == (200, {"status": "ready"})

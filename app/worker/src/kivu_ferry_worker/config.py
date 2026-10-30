@@ -1,5 +1,3 @@
-"""Settings from environment variables, checked once at startup."""
-
 from collections.abc import Mapping
 
 from pydantic import BaseModel, ConfigDict, Field, PostgresDsn, RedisDsn, ValidationError
@@ -8,7 +6,7 @@ from kivu_ferry_worker.logs import LogLevel
 
 
 class SettingsError(Exception):
-    """The environment can't produce valid settings; the worker must not start."""
+    pass
 
 
 class Settings(BaseModel):

@@ -62,7 +62,7 @@ describe('the API over HTTP', () => {
     expect(response.body).toEqual({ version: packageJson.version });
   });
 
-  /** With both Postgres and Valkey unreachable, /readyz says not ready and names both. */
+  /** Every failing dependency is named at once, so you don't fix one only to find the next. */
   it('is not ready and names every dependency that is down', async () => {
     const response = await get('/readyz', UNREACHABLE);
 
@@ -72,7 +72,7 @@ describe('the API over HTTP', () => {
     ]);
   });
 
-  /** With a real Postgres and Valkey answering, /readyz says ready. */
+  /** Proves the checks really reach both services, not only that failures are detected. */
   it('is ready when Postgres and Valkey answer', async () => {
     const response = await get('/readyz', runningServices());
 
