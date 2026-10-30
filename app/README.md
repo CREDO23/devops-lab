@@ -9,11 +9,13 @@ The Kivu Ferry booking app. What it does and why it's built this way: [app desig
 | PostgreSQL | 18, the newest on AWS RDS | `DATABASE_URL` |
 | Valkey | 9.1, the newest on AWS ElastiCache | `VALKEY_URL` |
 | uv | 0.11 or later | installs Python 3.14 for the worker by itself |
-| Node.js | 26 (LTS), pinned in `app/api/.nvmrc` | `make` switches to it through nvm when nvm is installed |
+| Node.js | 26 (LTS), pinned in each service's `.nvmrc` | `make` switches to it through nvm when nvm is installed |
 | pnpm | 10 or later | switches itself to the version pinned in `package.json` (12.16) |
 | make | any | runs every service's commands from the repository root (`make` lists them) |
 
 Where PostgreSQL and Valkey run is up to you; the services only need their URLs. `make install` installs every service's dependencies.
+
+A clean stop (SIGTERM) exits with status 143 in all three services: that's expected, not a failure.
 
 ## Worker
 
@@ -43,8 +45,6 @@ uv run --env-file .env kivu-ferry-worker
 | `GET /livez` | 200 while the process runs |
 | `GET /readyz` | 200 when PostgreSQL and Valkey answer, 503 naming the ones that don't |
 | `GET /version` | The running version |
-
-On SIGTERM or Ctrl+C, it finishes in-flight requests, logs `worker stopped`, then exits with status 143.
 
 **Check it**, from the repository root:
 
@@ -93,8 +93,6 @@ pnpm start                  # reads .env when it exists
 | `GET /version` | The running version |
 | `/api/...` | The public API, the only part the proxy routes |
 
-On SIGTERM or Ctrl+C, it finishes in-flight requests, logs `api stopped`, then exits with status 143.
-
 **Check it**, from the repository root:
 
 ```bash
@@ -103,3 +101,40 @@ make check-api              # types, oxlint, prettier, and import boundaries
 ```
 
 Or inside `app/api`, with pnpm directly: `pnpm test`, `pnpm typecheck`, `pnpm lint`, `pnpm format:check`, `pnpm boundaries`.
+
+## Web app
+
+The booking website and the operations area. For now it only serves a placeholder page, its health checks and version.
+
+**Settings**, read from the environment or `.env` (the environment wins), and checked by `pnpm start` and `pnpm dev` before Next.js starts:
+
+| Variable | Example | Purpose |
+|---|---|---|
+| `API_URL` | `http://localhost:3001` | Where the web server finds the API, read at runtime so one build runs everywhere |
+| `PORT` | `3000` | Optional, 3000 by default |
+| `LOG_LEVEL` | `info` | Optional, `info` by default: `debug`, `info`, `warn`, `error` or `silent` |
+
+**Run it:**
+
+```bash
+cd app/web
+cp .env.example .env        # then adjust
+nvm use && pnpm install && pnpm build
+pnpm start                  # reads .env when it exists
+```
+
+| Endpoint | Answers |
+|---|---|
+| `GET /livez` | 200 while the process runs |
+| `GET /readyz` | 200 while the process runs; it doesn't check the API, so an API outage doesn't take the website offline |
+| `GET /version` | The running version |
+| `/api/...` | Forwarded to the API at `API_URL` |
+
+**Check it**, from the repository root:
+
+```bash
+make test-web               # builds the web app, then runs the tests; needs nothing else running
+make check-web              # types, eslint, prettier, and import boundaries
+```
+
+Or inside `app/web`, with pnpm directly: `pnpm test`, `pnpm typecheck`, `pnpm lint`, `pnpm format:check`, `pnpm boundaries`.

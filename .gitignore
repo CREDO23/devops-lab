@@ -22,6 +22,8 @@ crash.log
 node_modules/
 dist/
 *.tsbuildinfo
+.next/
+next-env.d.ts
 
 # Python
 __pycache__/

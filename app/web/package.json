@@ -1,0 +1,40 @@
+{
+  "name": "kivu-ferry-web",
+  "version": "0.1.0",
+  "description": "Kivu Ferry web app: the booking website and the operations area",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.16.1",
+  "scripts": {
+    "dev": "node --env-file-if-exists=.env src/check-settings.ts && next dev -H 127.0.0.1 -p \"$(node --env-file-if-exists=.env -p 'process.env.PORT ?? 3000')\"",
+    "build": "next build",
+    "start": "node --env-file-if-exists=.env src/check-settings.ts && next start -H 127.0.0.1 -p \"$(node --env-file-if-exists=.env -p 'process.env.PORT ?? 3000')\"",
+    "test": "vitest run",
+    "lint": "eslint",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\" \"test/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx}\" \"test/**/*.ts\"",
+    "typecheck": "tsc --noEmit",
+    "boundaries": "depcruise src --config .dependency-cruiser.cjs"
+  },
+  "dependencies": {
+    "next": "16.4.3",
+    "pino": "^10.4.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@tailwindcss/turbopack": "^4.3.3",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "dependency-cruiser": "^18.7.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "16.4.3",
+    "prettier": "^3.9.10",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.5",
+    "vitest": "^4.1.12"
+  }
+}
