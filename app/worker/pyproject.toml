@@ -1,0 +1,56 @@
+[project]
+name = "kivu-ferry-worker"
+version = "0.1.0"
+description = "Kivu Ferry worker: payments, tickets, sign-in codes and expiry"
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi>=0.162.0",
+    "psycopg[binary]>=3.3.6",
+    "pydantic>=2.14.2",
+    "redis>=8.1.0",
+    "structlog>=26.1.0",
+    "uvicorn>=0.54.0",
+]
+
+[project.scripts]
+kivu-ferry-worker = "kivu_ferry_worker.main:main"
+
+[build-system]
+requires = ["uv_build>=0.11.7,<0.12.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "import-linter>=2.15",
+    "mypy>=2.4.1",
+    "pytest>=9.2.0",
+    "ruff>=0.17.3",
+]
+
+[tool.ruff]
+line-length = 100
+# The worker runs on 3.14, but its code stays readable by Python 3.12 and older tools.
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.mypy]
+strict = true
+plugins = ["pydantic.mypy"]
+enable_error_code = ["deprecated"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.importlinter]
+root_package = "kivu_ferry_worker"
+
+[[tool.importlinter.contracts]]
+name = "Features are used only through their public API"
+type = "forbidden"
+source_modules = ["kivu_ferry_worker.api", "kivu_ferry_worker.main"]
+forbidden_modules = ["kivu_ferry_worker.health.*"]
+# Only direct imports count: going through a feature's public API is the point.
+allow_indirect_imports = true

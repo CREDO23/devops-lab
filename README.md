@@ -4,14 +4,14 @@ A learning lab where I take a real-world **full-stack** app, a ferry ticket book
 
 ## The app
 
-Travellers search a trip (*Goma → Bukavu, Saturday 07:00*), pick a seat on the boat and pay with mobile money; once the payment is confirmed, they receive their ticket by SMS. They can book as a guest or sign in with their phone number and a one-time code to keep all their trips in one place. Staff (agents and managers) sign in with two-factor authentication to follow and export bookings and manage staff accounts. The site is in English, French and Swahili.
+Travellers search a trip (*Goma → Bukavu, Saturday 07:00*), pick a seat on the boat and pay with mobile money; once the payment is confirmed, they receive their ticket by SMS. They can book as a guest or sign in with their phone number and a one-time code to keep all their trips in one place. Staff (agents and managers) sign in with two-factor authentication to follow and export bookings and manage staff accounts. The website is in English, French and Swahili.
 
 ```mermaid
 flowchart LR
     traveller([Traveller]) --> proxy[Proxy<br/>HTTPS]
     ops([Staff]) --> proxy
     providers([Payment and SMS<br/>providers]) -->|webhooks| proxy
-    proxy -->|/| web["Frontend — Next.js<br/>booking site, operations area"]
+    proxy -->|/| web["Frontend — Next.js<br/>booking website, operations area"]
     proxy -->|/api| api["API — NestJS<br/>search, bookings, accounts"]
     proxy -->|/webhooks| worker["Worker — FastAPI<br/>payments, tickets, expiry"]
     web --> api
@@ -52,7 +52,7 @@ The app is written before chapter 02: the chapters are about running it, not wri
 | **Foundations, on my laptop** | | |
 | 01 · Linux fundamentals | The DevOps essentials: services, troubleshooting, permissions, networking, SSH and Bash | In progress |
 | 02 · Databases (PostgreSQL) | Performance, connections and safe changes | Planned |
-| 03 · Build tools (npm, uv) | From source code to a reliable, deployable package | Planned |
+| 03 · Build tools (pnpm, uv) | From source code to a reliable, deployable package | Planned |
 | **Build, integrate, deploy** | | |
 | 04 · Cloud servers (DigitalOcean) | Creating, securing and serving an app on a VPS | Planned |
 | 05 · Artifact repository (Nexus) | Versioning, publishing and restoring releases | Planned |
@@ -85,7 +85,7 @@ The app is written before chapter 02: the chapters are about running it, not wri
 
 - Git, and a Linux, macOS or WSL2 machine
 - From chapter 01: an Ubuntu 24.04 LTS VM you can throw away, created however you like
-- From chapter 02: Node.js, uv, PostgreSQL and Valkey (versions in `app/README.md`)
+- From chapter 02: Node.js, pnpm, uv, PostgreSQL and Valkey (versions in `app/README.md`)
 - From chapter 04: a DigitalOcean account
 - From chapter 06: Docker
 - From chapter 08: an AWS account. Set a budget alert first, and destroy resources after each session.

@@ -1,0 +1,5 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/app/worker/.venv/bin/python",
+  "typescript.tsdk": "app/api/node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
+}

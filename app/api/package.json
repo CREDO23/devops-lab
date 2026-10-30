@@ -1,0 +1,49 @@
+{
+  "name": "kivu-ferry-api",
+  "version": "0.1.0",
+  "description": "Kivu Ferry API: search, bookings, accounts",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.16.1",
+  "scripts": {
+    "build": "nest build",
+    "start": "node --env-file-if-exists=.env dist/main.js",
+    "test": "node --env-file-if-exists=.env node_modules/vitest/vitest.mjs run",
+    "lint": "oxlint --type-aware src/ test/",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
+    "typecheck": "tsc --noEmit",
+    "boundaries": "depcruise src --config .dependency-cruiser.cjs"
+  },
+  "dependencies": {
+    "@nestjs/common": "^12.3.2",
+    "@nestjs/config": "^12.0.1",
+    "@nestjs/core": "^12.3.2",
+    "@nestjs/platform-express": "^12.3.2",
+    "ioredis": "^6.0.0",
+    "nestjs-pino": "^5.3.1",
+    "pg": "^8.23.1",
+    "pino": "^10.4.0",
+    "pino-http": "^11.0.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^12.0.11",
+    "@nestjs/schematics": "^12.0.12",
+    "@nestjs/testing": "^12.3.2",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.6",
+    "@types/pg": "^8.23.1",
+    "@types/supertest": "^7.2.1",
+    "dependency-cruiser": "^18.7.0",
+    "oxlint": "^1.90.0",
+    "oxlint-tsgolint": "^7.0.2005",
+    "prettier": "^3.9.10",
+    "supertest": "^7.3.1",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.5",
+    "vitest": "^4.1.12"
+  }
+}

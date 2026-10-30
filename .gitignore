@@ -21,6 +21,9 @@ crash.log
 # Node
 node_modules/
 dist/
+*.tsbuildinfo
+.next/
+next-env.d.ts
 
 # Python
 __pycache__/
@@ -34,4 +37,5 @@ kubeconfig*
 # OS / editors
 .DS_Store
 .idea/
-.vscode/
+.vscode/*
+!.vscode/settings.json
