@@ -29,6 +29,7 @@ cd ../..
 make db-migrate             # or make db-rollback
 make db-new-migration name=add_passenger_name
 make db-seed                # fake data, development and staging only
+make db-generate-types      # after any new migration; never edit the generated files
 make test-db
 make check-db
 ```

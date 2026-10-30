@@ -8,6 +8,7 @@ dependencies = [
     "psycopg[binary]>=3.3.6",
     "pydantic>=2.14.2",
     "redis>=8.1.0",
+    "sqlalchemy>=2.0",
     "structlog>=26.1.0",
     "uvicorn>=0.54.0",
 ]
@@ -26,10 +27,12 @@ dev = [
     "mypy>=2.4.1",
     "pytest>=9.2.0",
     "ruff>=0.17.3",
+    "sqlacodegen==4.0.4",
 ]
 
 [tool.ruff]
 line-length = 100
+extend-exclude = ["src/kivu_ferry_worker/database/generated_models.py"]
 # The worker runs on 3.14, but its code stays readable by Python 3.12 and older tools.
 target-version = "py312"
 

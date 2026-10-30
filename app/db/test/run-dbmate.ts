@@ -7,7 +7,7 @@ export function runDbmate(
   env: NodeJS.ProcessEnv,
   cwd: string = DB_DIRECTORY,
 ): { status: number | null; output: string } {
-  const result = spawnSync(`${DB_DIRECTORY}run-dbmate.sh`, args, {
+  const result = spawnSync(`${DB_DIRECTORY}scripts/run-dbmate.sh`, args, {
     cwd,
     env: { ...process.env, ...env },
     encoding: 'utf8',

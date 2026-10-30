@@ -6,9 +6,10 @@
   "type": "module",
   "packageManager": "pnpm@12.16.1",
   "scripts": {
-    "new-migration": "./run-dbmate.sh new",
-    "migrate": "./run-dbmate.sh up",
-    "rollback": "./run-dbmate.sh rollback",
+    "new-migration": "./scripts/run-dbmate.sh new",
+    "migrate": "./scripts/run-dbmate.sh up",
+    "rollback": "./scripts/run-dbmate.sh rollback",
+    "generate-types": "./scripts/generate-types.sh",
     "seed": "node --env-file-if-exists=.env seed/load-fake-data.ts",
     "test": "node --env-file-if-exists=.env node_modules/vitest/vitest.mjs run",
     "format": "prettier --write \"{seed,test}/**/*.ts\"",

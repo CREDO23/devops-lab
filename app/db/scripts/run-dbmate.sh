@@ -1,7 +1,7 @@
 #!/bin/sh
-here=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-export DBMATE_MIGRATIONS_DIR="${DBMATE_MIGRATIONS_DIR:-$here/migrations}"
-export DBMATE_SCHEMA_FILE="${DBMATE_SCHEMA_FILE:-$here/schema.sql}"
+db_directory=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+export DBMATE_MIGRATIONS_DIR="${DBMATE_MIGRATIONS_DIR:-$db_directory/migrations}"
+export DBMATE_SCHEMA_FILE="${DBMATE_SCHEMA_FILE:-$db_directory/schema.sql}"
 
 warn_if_schema_misses_a_migration() {
   missing=""
@@ -20,7 +20,7 @@ warn_if_schema_misses_a_migration() {
 : "${PG_DUMP_COMMAND:=$(command -v pg_dump)}"
 if [ -z "$PG_DUMP_COMMAND" ]; then
   echo "note: no pg_dump found, so schema.sql is not updated" >&2
-  "$here/node_modules/.bin/dbmate" "$@"
+  "$db_directory/node_modules/.bin/dbmate" "$@"
   status=$?
   [ "$1" = "new" ] || warn_if_schema_misses_a_migration
   exit "$status"
@@ -28,11 +28,11 @@ fi
 
 PG_DUMP_ERRORS=$(mktemp)
 export PG_DUMP_COMMAND PG_DUMP_ERRORS
-PATH="$here/tools:$PATH" "$here/node_modules/.bin/dbmate" "$@"
+PATH="$db_directory/tools:$PATH" "$db_directory/node_modules/.bin/dbmate" "$@"
 status=$?
 if [ -s "$PG_DUMP_ERRORS" ]; then
   echo "error: schema.sql was not updated, pg_dump failed: $(cat "$PG_DUMP_ERRORS")" >&2
-  echo "fix it, then run ./run-dbmate.sh dump from app/db" >&2
+  echo "fix it, then run ./scripts/run-dbmate.sh dump from app/db" >&2
   [ "$status" -eq 0 ] && status=1
 fi
 rm -f "$PG_DUMP_ERRORS"
