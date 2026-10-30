@@ -9,9 +9,10 @@
     "new-migration": "./run-dbmate.sh new",
     "migrate": "./run-dbmate.sh up",
     "rollback": "./run-dbmate.sh rollback",
+    "seed": "node --env-file-if-exists=.env seed/load-fake-data.ts",
     "test": "node --env-file-if-exists=.env node_modules/vitest/vitest.mjs run",
-    "format": "prettier --write \"test/**/*.ts\"",
-    "format:check": "prettier --check \"test/**/*.ts\"",
+    "format": "prettier --write \"{seed,test}/**/*.ts\"",
+    "format:check": "prettier --check \"{seed,test}/**/*.ts\"",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

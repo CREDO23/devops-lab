@@ -1,6 +1,6 @@
 # One front door for every service; each service keeps its own native commands.
 .DEFAULT_GOAL := help
-.PHONY: help install test check db-new-migration db-migrate db-rollback install-db test-db check-db install-worker test-worker check-worker install-api test-api check-api install-web test-web check-web
+.PHONY: help install test check db-new-migration db-migrate db-rollback db-seed install-db test-db check-db install-worker test-worker check-worker install-api test-api check-api install-web test-web check-web
 
 # Use the worker's .env when it exists; elsewhere the variables come from the environment.
 WORKER_ENV_FILE := $(if $(wildcard app/worker/.env),--env-file .env)
@@ -34,6 +34,10 @@ db-migrate: ## Apply the database migrations and update schema.sql
 db-rollback: ## Undo the newest database migration and update schema.sql
 	$(call heading,db · rollback)
 	@cd app/db && $(USE_NODE) && pnpm -s rollback
+
+db-seed: ## Load fake data, for development and staging only
+	$(call heading,db · seed)
+	@cd app/db && $(USE_NODE) && pnpm -s seed
 
 install-db: ## Database tooling
 	$(call heading,db · install)

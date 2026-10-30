@@ -28,6 +28,7 @@ cp .env.example .env        # then adjust
 cd ../..
 make db-migrate             # or make db-rollback
 make db-new-migration name=add_passenger_name
+make db-seed                # fake data, development and staging only
 make test-db
 make check-db
 ```
@@ -37,6 +38,7 @@ make check-db
 | `DATABASE_URL` | `postgres://kivu:kivu@localhost:5432/kivu?sslmode=disable` | The database to migrate |
 | `TEST_DATABASE_URL` | `postgres://kivu:kivu@localhost:5432/kivu_test?sslmode=disable` | Tests create and drop their own databases from here, so its user must be allowed to |
 | `PG_DUMP_COMMAND` | `pg_dump -h db.example` | Optional. The command that runs `pg_dump`, wherever PostgreSQL is |
+| `ALLOW_FAKE_DATA` | `true` | `make db-seed` refuses to run without it. Production never sets it |
 
 | `pg_dump` | `make db-migrate` | `schema.sql` |
 |---|---|---|

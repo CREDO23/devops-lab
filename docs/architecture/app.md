@@ -265,7 +265,8 @@ erDiagram
 - Boarding rules are the same for every trip, so they're constants: be at the port 30 minutes before departure, boarding closes 15 minutes before.
 - Popular routes, trips a day and the staff stat cards are computed, never stored.
 - Statuses are Postgres `ENUM`s ([ADR-0006](../adr/0006-query-the-database-with-generated-types.md)).
-- A seed command creates the routes between the five ports, boats, a timetable and the first manager, since none of them can be managed from the interface.
+- A seed command fills development and staging with fake ports, routes, boats and a timetable, and refuses to run unless `ALLOW_FAKE_DATA=true`, which production never sets.
+- Production's data is real, not seed data. The first manager comes from its own command; loading the real routes, boats and timetable, which can't be managed from the interface, isn't designed yet.
 
 ## 8 · Building the app
 
