@@ -22,6 +22,17 @@ def test_valid_environment_gives_typed_settings() -> None:
     )
 
 
+def test_log_level_defaults_to_info() -> None:
+    """LOG_LEVEL is optional: without it, the worker logs at its normal level."""
+    assert load_settings(VALID_ENVIRONMENT).log_level == "info"
+
+
+def test_unknown_log_level_is_named_in_the_error() -> None:
+    """A level the worker doesn't know is caught at startup, with the variable's name."""
+    with pytest.raises(SettingsError, match="LOG_LEVEL"):
+        load_settings({**VALID_ENVIRONMENT, "LOG_LEVEL": "loud"})
+
+
 def test_missing_variable_is_named_in_the_error() -> None:
     """A missing variable stops the worker with its name, so the fix is obvious."""
     environment = {k: v for k, v in VALID_ENVIRONMENT.items() if k != "DATABASE_URL"}

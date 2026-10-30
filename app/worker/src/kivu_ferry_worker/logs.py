@@ -2,9 +2,25 @@
 
 import logging
 import sys
+from typing import Literal
 
 import structlog
 from structlog.typing import Processor
+
+# The same names as the API's, so operators use one vocabulary everywhere.
+type LogLevel = Literal["debug", "info", "warn", "error", "silent"]
+
+_LEVELS: dict[LogLevel, int] = {
+    "debug": logging.DEBUG,
+    "info": logging.INFO,
+    "warn": logging.WARNING,
+    "error": logging.ERROR,
+    "silent": logging.CRITICAL + 1,
+}
+
+
+def set_log_level(level: LogLevel) -> None:
+    logging.getLogger().setLevel(_LEVELS[level])
 
 
 def configure_logging() -> None:

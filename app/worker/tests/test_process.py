@@ -13,7 +13,7 @@ from pathlib import Path
 import httpx
 
 WORKER = [sys.executable, "-m", "kivu_ferry_worker.main"]
-SETTINGS = ("DATABASE_URL", "VALKEY_URL", "INTERNAL_PORT")
+SETTINGS = ("DATABASE_URL", "VALKEY_URL", "INTERNAL_PORT", "LOG_LEVEL")
 
 
 def free_port() -> int:
@@ -29,7 +29,7 @@ def environment(**overrides: str) -> dict[str, str]:
     return {**base, **overrides}
 
 
-def start_worker() -> tuple[subprocess.Popen[str], int]:
+def start_worker(**extra_settings: str) -> tuple[subprocess.Popen[str], int]:
     port = free_port()
     process = subprocess.Popen(
         WORKER,
@@ -37,6 +37,7 @@ def start_worker() -> tuple[subprocess.Popen[str], int]:
             DATABASE_URL="postgresql://kivu:kivu@127.0.0.1:1/kivu",
             VALKEY_URL="redis://127.0.0.1:1/0",
             INTERNAL_PORT=str(port),
+            **extra_settings,
         ),
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -106,3 +107,14 @@ def test_sigterm_lets_the_worker_finish_its_shutdown() -> None:
 
     events = [json.loads(line).get("event") for line in output.splitlines() if is_json_object(line)]
     assert "worker stopped" in events
+
+
+def test_a_higher_log_level_drops_info_lines() -> None:
+    """With LOG_LEVEL=warn, routine lines like "worker started" stay out of the logs."""
+    process, _ = start_worker(LOG_LEVEL="warn")
+
+    process.send_signal(signal.SIGTERM)
+    output, _ = process.communicate(timeout=5)
+
+    events = [json.loads(line).get("event") for line in output.splitlines() if is_json_object(line)]
+    assert "worker started" not in events

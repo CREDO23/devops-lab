@@ -8,7 +8,7 @@ import uvicorn
 
 from kivu_ferry_worker.api import create_api
 from kivu_ferry_worker.config import SettingsError, load_settings
-from kivu_ferry_worker.logs import configure_logging
+from kivu_ferry_worker.logs import configure_logging, set_log_level
 
 
 def main() -> None:
@@ -18,6 +18,7 @@ def main() -> None:
     except SettingsError as error:
         structlog.get_logger().error("worker cannot start", reason=str(error))
         sys.exit(1)
+    set_log_level(settings.log_level)
 
     uvicorn.run(
         create_api(settings),
