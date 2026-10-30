@@ -21,6 +21,7 @@ crash.log
 # Node
 node_modules/
 dist/
+*.tsbuildinfo
 
 # Python
 __pycache__/
